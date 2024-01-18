@@ -1,0 +1,21 @@
+= About
+
+This repository is a simple proof of concept around https://htmx.org[HTMX], and since it can be linked to a backend, I chose https://www.rust-lang.org/[Rust] as its language of choice.
+
+= Objectives
+
+- Learn HTMX with a concrete, ideally non-trivial use-case
+- Improve my "business" Rust
+- Have fun !
+
+= How to build
+
+TBD
+
+= How to start
+
+TBD
+
+= How to test
+
+TBD
