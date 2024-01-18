@@ -10,12 +10,28 @@ This repository is a simple proof of concept around https://htmx.org[HTMX], and 
 
 = How to build
 
-TBD
+[source,bash]
+----
+$ cd backend
+
+$ cargo build --release
+----
 
 = How to start
 
-TBD
+[source,bash]
+----
+$ cd backend
+
+$ cargo run --release
+----
 
 = How to test
 
-TBD
+[source,bash]
+----
+$ cd backend
+
+$ cargo test
+----
+
