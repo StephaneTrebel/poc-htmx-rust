@@ -11,12 +11,19 @@
 
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/main.css" />
-
   </head>
-  <body>
+  <body style="padding: 10px">
+    <h1 style="font-size: 2rem; margin-bottom: 3rem">HTMX - Rust</h1>
 
-	<h1>This is HTMX</h1>
+    <button
+      hx-post="/clicked"
+      hx-trigger="click"
+      hx-target="#target-div"
+      hx-swap="outerHTML"
+    >
+      Click me !
+    </button>
 
-   <script src="/path/to/htmx.min.js"></script>
+    <script src="/path/to/htmx.min.js"></script>
   </body>
 </html>
