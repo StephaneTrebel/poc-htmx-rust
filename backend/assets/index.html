@@ -19,10 +19,12 @@
       hx-post="/clicked"
       hx-trigger="click"
       hx-target="#target-div"
-      hx-swap="outerHTML"
+      hx-swap="innerHTML"
     >
       Click me !
     </button>
+
+    <div id="target-div" style="margin: 20px">I'm going to change !</div>
 
     <script src="htmx.min.js"></script>
   </body>
