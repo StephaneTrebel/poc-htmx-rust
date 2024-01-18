@@ -1,4 +1,7 @@
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use maud::{html, Markup};
 
 async fn hello_world() -> Markup {
@@ -7,9 +10,17 @@ async fn hello_world() -> Markup {
     }
 }
 
+async fn clicked() -> Markup {
+    html! {
+        p { "You clicked !"}
+    }
+}
+
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/", get(hello_world));
+    let app = Router::new()
+        .route("/", get(hello_world))
+        .route("/clicked", post(clicked));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
