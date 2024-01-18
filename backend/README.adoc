@@ -13,7 +13,7 @@ $ cargo run --release
      Running `target/release/backend`
 
 # In another terminal
-$ curl curl http://0.0.0.0:3000/
+$ curl http://0.0.0.0:3000/
 Hello, World !
 ----
 
