@@ -1,0 +1,19 @@
+= About
+
+This is the backend part of the POC, written in Rust (more specifically, in https://docs.rs/axum/latest/[Axum]).
+
+= How to Start
+
+You're gonna need `cargo`
+
+----
+[source,bash]
+$ cargo run --release
+[…lots of stuff…]
+     Running `target/release/backend`
+
+# In another terminal
+$ curl curl http://0.0.0.0:3000/
+Hello, World !
+----
+
