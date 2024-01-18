@@ -1,6 +1,6 @@
 = About
 
-This repository is a simple proof of concept around https://htmx.org[HTMX], and since it can be linked to a backend, I chose https://www.rust-lang.org/[Rust] as its language of choice.
+This repository is a simple proof of concept around https://htmx.org[HTMX], and since it can be linked to an HTTP backend, I chose https://www.rust-lang.org/[Rust] as its language of choice.
 
 = Objectives
 
