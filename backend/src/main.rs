@@ -1,14 +1,6 @@
-use axum::{
-    routing::{get, post},
-    Router,
-};
+use axum::{routing::post, Router};
 use maud::{html, Markup};
-
-async fn hello_world() -> Markup {
-    html! {
-        h1 { "Hello, World!" }
-    }
-}
+use tower_http::services::{ServeDir, ServeFile};
 
 async fn clicked() -> Markup {
     html! {
@@ -19,7 +11,10 @@ async fn clicked() -> Markup {
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/", get(hello_world))
+        .nest_service(
+            "/",
+            ServeDir::new("assets").not_found_service(ServeFile::new("assets/index.html")),
+        )
         .route("/clicked", post(clicked));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
