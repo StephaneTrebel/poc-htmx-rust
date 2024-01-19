@@ -1,7 +1,20 @@
-<form id="my-form">
-  <label for="input">Name</label>
-  <my-input id="input" name="myInput" placeholder="test" required></my-input>
-  <button type="reset">Reset</button>
-  <button>Submit</button>
-</form>
+<form
+  id="my-form"
+  style="
+    display: flex;
+    flex-flow: row wrap;
+    flex-direction: column;
+    justify-content: space-around;
+  "
+>
+  <div style="margin: auto">
+    <my-input label="First Name" placeholder="name" required></my-input>
+    <my-input label="Last Name" placeholder="name" required></my-input>
+    <my-input label="Email" placeholder="email" required></my-input>
+  </div>
 
+  <div>
+    <button type="reset">Reset</button>
+    <button>Submit</button>
+  </div>
+</form>

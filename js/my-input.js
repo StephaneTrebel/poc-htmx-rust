@@ -4,10 +4,10 @@ customElements.define(
   class extends HTMLElement {
     static formAssociated = true;
     static get observedAttributes() {
-      return ['required', 'value', 'placeholder'];
+      return ['required', 'value', 'placeholder', 'label'];
     }
 
-		//  TS declarations
+    //  TS declarations
     // $input: HTMLInputElement;
     // _attrs = {};
     // _internals: ElementInternals;
@@ -15,7 +15,7 @@ customElements.define(
 
     constructor() {
       super();
-			this._attrs = {};
+      this._attrs = {};
       this._internals = this.attachInternals();
       this._internals.role = 'textbox';
       this.tabindex = 0;
@@ -25,7 +25,12 @@ customElements.define(
       this.attachShadow({
         mode: 'open',
         delegatesFocus: true,
-      }).innerHTML = `<input type="text" role="none" tabindex="-1" />`;
+      }).innerHTML = `
+			<div style="margin-top: 10px">
+				<label for="input">${this._attrs["label"]}</label>
+				<input type="text" role="none" tabindex="-1" />
+      </div>
+`;
       this.$input = this.shadowRoot.querySelector('input');
       this.setProps();
       this._defaultValue = this.$input.value;
