@@ -11,10 +11,8 @@ async fn clicked() -> Markup {
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .nest_service(
-            "/",
-            ServeDir::new("assets").not_found_service(ServeFile::new("assets/index.html")),
-        )
+        .nest_service("/", ServeFile::new("templates/index.html"))
+        .nest_service("/assets", ServeDir::new("assets"))
         .route("/clicked", post(clicked));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
