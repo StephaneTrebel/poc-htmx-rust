@@ -15,17 +15,16 @@
   <body style="padding: 10px">
     <h1 style="font-size: 2rem; margin-bottom: 3rem">HTMX - Rust</h1>
 
-    <button
-      hx-post="/clicked"
-      hx-trigger="click"
-      hx-target="#target-div"
-      hx-swap="innerHTML"
-    >
-      Click me !
-    </button>
-
-    <div id="target-div" style="margin: 20px">I'm going to change !</div>
+    <div
+      id="wrapper-form"
+      style="margin: 20px"
+      hx-trigger="load"
+      hx-get="/get-form"
+    ></div>
 
     <script src="assets/htmx.min.js"></script>
+
+    <!-- Should not be there -->
+    <script src="js/my-input.js"></script>
   </body>
 </html>
