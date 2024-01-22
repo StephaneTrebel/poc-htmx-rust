@@ -3,12 +3,6 @@ use maud::{html, Markup};
 use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
 
-async fn clicked() -> Markup {
-    html! {
-        p { "You clicked !"}
-    }
-}
-
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 struct MyForm {
@@ -37,7 +31,6 @@ async fn main() {
         Router::new().nest_service("/favicon.ico", ServeFile::new("assets/favicon.ico"));
 
     let api_routes = Router::new()
-        .route("/clicked", post(clicked))
         .route("/post-form", post(post_form));
 
     let app = Router::new()
