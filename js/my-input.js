@@ -4,14 +4,8 @@ customElements.define(
   class extends HTMLElement {
     static formAssociated = true;
     static get observedAttributes() {
-      return ['required', 'value', 'placeholder', 'label', 'name'];
+      return ['label', 'name', 'placeholder', 'required', 'type', 'value'];
     }
-
-    //  TS declarations
-    // $input: HTMLInputElement;
-    // _attrs = {};
-    // _internals: ElementInternals;
-    // _defaultValue = "";
 
     constructor() {
       super();
@@ -24,53 +18,46 @@ customElements.define(
     connectedCallback() {
       this.innerHTML = `
 			<div style="margin-top: 10px">
+				<style>
+					input:invalid {
+						border: 2px dashed red;
+					}
+					input:invalid:required {
+						background-image: linear-gradient(to right, pink, lightgreen);
+					}
+					input:valid {
+						border: 2px solid black;
+					}
+				</style>
 				<label for="${this._attrs['name']}">${this._attrs['label']}</label>
 				<input
 				  id="${this._attrs['name']}"
 					name="${this._attrs['name']}"
-					type="text" role="none"
+					type="${this._attrs['type'] || 'text'}"
 					placeholder="${this._attrs['placeholder']}"
 				/>
       </div>
 `;
-      this.$input = this.shadowRoot.querySelector('input');
+      this.$input = this.querySelector('input');
       this.setProps();
-      this._defaultValue = this.$input.value;
-      this._internals.setFormValue(this.value);
+
+
+			// Clear up validation state when inputting stuff
+			// The first one is for the initial state
+      this.$input.addEventListener('input', () => this.handleInput());
+    }
+
+    handleInput() {
       this._internals.setValidity(
         this.$input.validity,
         this.$input.validationMessage,
         this.$input
       );
-      this.$input.addEventListener('input', () => this.handleInput());
     }
 
     attributeChangedCallback(name, _prev, next) {
       this._attrs[name] = next;
-    }
-
-    formDisabledCallback(disabled) {
-      this.$input.disabled = disabled;
-    }
-
-    formResetCallback() {
-      this.$input.value = this._defaultValue;
-    }
-
-    checkValidity() {
-      return this._internals.checkValidity();
-    }
-
-    reportValidity() {
-      return this._internals.reportValidity();
-    }
-
-    get validity() {
-      return this._internals.validity;
-    }
-
-    get validationMessage() {
-      return this._internals.validationMessage;
+      this.setProps();
     }
 
     setProps() {
@@ -85,9 +72,6 @@ customElements.define(
           case 'value':
             this.$input.value = this._attrs[prop];
             break;
-          case 'placeholder':
-            this.$input.placeholder = this._attrs[prop];
-            break;
           case 'required':
             const required = this._attrs[prop];
             this.$input.toggleAttribute(
@@ -100,15 +84,6 @@ customElements.define(
 
       // reset the attributes to prevent unwanted changes later
       this._attrs = {};
-    }
-
-    handleInput() {
-      this._internals.setValidity(
-        this.$input.validity,
-        this.$input.validationMessage,
-        this.$input
-      );
-      this._internals.setFormValue(this.value);
     }
   }
 );

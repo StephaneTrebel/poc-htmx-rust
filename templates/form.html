@@ -1,24 +1,36 @@
 <form
   id="my-form"
-	method="POST"
- enctype="multipart/form-data"
+  method="POST"
   style="
     display: flex;
     flex-flow: row wrap;
     flex-direction: column;
     justify-content: space-around;
+    border: solid 1px black;
   "
+  hx-post="post-form"
+  hx-target="#result"
+  hx-swap="innerHTML"
 >
   <div style="margin: auto">
-    <my-input name="first_name" label="First Name" placeholder="name" required></my-input>
-    <my-input name="last_name" label="Last Name" placeholder="name" required></my-input>
-    <my-input name="email" label="Email" placeholder="email" required></my-input>
+    <my-input
+      name="first_name"
+      label="First Name"
+      placeholder="name"
+      required
+    ></my-input>
+    <my-input name="last_name" label="Last Name" placeholder="name"></my-input>
+    <my-input
+      type="email"
+      name="email"
+      label="Email"
+      placeholder="email"
+      required
+    ></my-input>
   </div>
 
   <div>
     <button type="reset">Reset</button>
-    <button hx-post="post-form" hx-target="#result" hx-swap="outerHTML">
-      Submit
-    </button>
+    <button>Submit</button>
   </div>
 </form>
