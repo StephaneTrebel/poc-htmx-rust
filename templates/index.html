@@ -11,25 +11,29 @@
 
     <link rel="stylesheet" href="assets/reset.css" />
     <link rel="stylesheet" href="assets/main.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
   </head>
-  <body style="padding: 10px">
-    <h1 style="font-size: 2rem; margin-bottom: 3rem">HTMX - Rust</h1>
 
-    <div
+  <body style="padding: 10px">
+    <h1>HTMX - Rust</h1>
+
+    <button
+      type="button"
+      class="btn btn-secondary"
       style="position: absolute; top: 10px; right: 10px"
       hx-get="/healthcheck"
-      hx-trigger="every 2s"
-    ></div>
+      hx-trigger="every 1s"
+    ></button>
 
     <div
       id="wrapper-form"
-      style="margin: 20px"
       hx-trigger="load"
       hx-get="/get-form"
     ></div>
 
-    <div id="result" style="border: solid 1px red"></div>
+    <div id="result" class="callout"></div>
 
     <script src="assets/htmx.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
   </body>
 </html>

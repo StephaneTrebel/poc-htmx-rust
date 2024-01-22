@@ -26,7 +26,12 @@ async fn healthcheck(time: SystemTime) -> Markup {
     match time.elapsed() {
         Ok(elapsed) => {
             html! {
-                p { "server uptime: " (elapsed.as_secs()) " secs" }
+                p { "Server uptime: "
+                    span class="badge text-bg-primary"  {
+                        (elapsed.as_secs())
+                    }
+                    " secs"
+                }
             }
         }
         Err(e) => html! {

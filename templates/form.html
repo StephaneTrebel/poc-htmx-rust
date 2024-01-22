@@ -3,18 +3,11 @@
 <form
   id="my-form"
   method="POST"
-  style="
-    display: flex;
-    flex-flow: row wrap;
-    flex-direction: column;
-    justify-content: space-around;
-    border: solid 1px black;
-  "
   hx-post="post-form"
   hx-target="#result"
   hx-swap="innerHTML"
 >
-  <div style="margin: auto">
+  <div class="mb-3">
     <my-input
       name="first_name"
       label="First Name"
@@ -31,8 +24,6 @@
     ></my-input>
   </div>
 
-  <div>
-    <button type="reset">Reset</button>
-    <button>Submit</button>
-  </div>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

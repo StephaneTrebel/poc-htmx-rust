@@ -17,21 +17,14 @@ customElements.define(
 
     connectedCallback() {
       this.innerHTML = `
-			<div style="margin-top: 10px">
-				<style>
-					input:invalid {
-						border: 2px dashed red;
-					}
-					input:invalid:required {
-						background-image: linear-gradient(to right, pink, lightgreen);
-					}
-					input:valid {
-						border: 2px solid black;
-					}
-				</style>
-				<label for="${this._attrs['name']}">${this._attrs['label']}</label>
+			<div>
+				<label
+				  for="${this._attrs['name']}"
+					class="form-label"
+				>${this._attrs['label']}</label>
 				<input
 				  id="${this._attrs['name']}"
+					class="form-control"
 					name="${this._attrs['name']}"
 					type="${this._attrs['type'] || 'text'}"
 					placeholder="${this._attrs['placeholder']}"
