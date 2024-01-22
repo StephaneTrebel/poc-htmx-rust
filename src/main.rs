@@ -1,4 +1,9 @@
-use axum::{routing::post, Form, Router};
+use std::time::SystemTime;
+
+use axum::{
+    routing::{get, post},
+    Form, Router,
+};
 use maud::{html, Markup};
 use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
@@ -17,8 +22,23 @@ async fn post_form(Form(form): Form<MyForm>) -> Markup {
     }
 }
 
+async fn healthcheck(time: SystemTime) -> Markup {
+    match time.elapsed() {
+        Ok(elapsed) => {
+            html! {
+                p { "server uptime: " (elapsed.as_secs()) " secs" }
+            }
+        }
+        Err(e) => html! {
+            p { "Fatal error: " (e) }
+        },
+    }
+}
+
 #[tokio::main]
 async fn main() {
+    let now: SystemTime = SystemTime::now();
+
     let template_routes = Router::new()
         .nest_service("/", ServeFile::new("templates/index.html"))
         .nest_service("/get-form", ServeFile::new("templates/form.html"));
@@ -31,7 +51,8 @@ async fn main() {
         Router::new().nest_service("/favicon.ico", ServeFile::new("assets/favicon.ico"));
 
     let api_routes = Router::new()
-        .route("/post-form", post(post_form));
+        .route("/post-form", post(post_form))
+        .route("/healthcheck", get(move || healthcheck(now)));
 
     let app = Router::new()
         .merge(template_routes)
