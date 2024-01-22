@@ -22,13 +22,15 @@ customElements.define(
     }
 
     connectedCallback() {
-      this.attachShadow({
-        mode: 'open',
-        delegatesFocus: true,
-      }).innerHTML = `
+      this.innerHTML = `
 			<div style="margin-top: 10px">
-				<label for="${this._attrs["name"]}">${this._attrs["label"]}</label>
-				<input id="${this._attrs["name"]}" name="${this._attrs["name"]}" type="text" role="none" />
+				<label for="${this._attrs['name']}">${this._attrs['label']}</label>
+				<input
+				  id="${this._attrs['name']}"
+					name="${this._attrs['name']}"
+					type="text" role="none"
+					placeholder="${this._attrs['placeholder']}"
+				/>
       </div>
 `;
       this.$input = this.shadowRoot.querySelector('input');
