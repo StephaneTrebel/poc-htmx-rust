@@ -4,7 +4,7 @@ customElements.define(
   class extends HTMLElement {
     static formAssociated = true;
     static get observedAttributes() {
-      return ['required', 'value', 'placeholder', 'label'];
+      return ['required', 'value', 'placeholder', 'label', 'name'];
     }
 
     //  TS declarations
@@ -27,8 +27,8 @@ customElements.define(
         delegatesFocus: true,
       }).innerHTML = `
 			<div style="margin-top: 10px">
-				<label for="input">${this._attrs["label"]}</label>
-				<input type="text" role="none" tabindex="-1" />
+				<label for="${this._attrs["name"]}">${this._attrs["label"]}</label>
+				<input id="${this._attrs["name"]}" name="${this._attrs["name"]}" type="text" role="none" />
       </div>
 `;
       this.$input = this.shadowRoot.querySelector('input');

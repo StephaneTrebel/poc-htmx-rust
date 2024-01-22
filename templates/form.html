@@ -1,5 +1,7 @@
 <form
   id="my-form"
+	method="POST"
+ enctype="multipart/form-data"
   style="
     display: flex;
     flex-flow: row wrap;
@@ -8,13 +10,15 @@
   "
 >
   <div style="margin: auto">
-    <my-input label="First Name" placeholder="name" required></my-input>
-    <my-input label="Last Name" placeholder="name" required></my-input>
-    <my-input label="Email" placeholder="email" required></my-input>
+    <my-input name="first_name" label="First Name" placeholder="name" required></my-input>
+    <my-input name="last_name" label="Last Name" placeholder="name" required></my-input>
+    <my-input name="email" label="Email" placeholder="email" required></my-input>
   </div>
 
   <div>
     <button type="reset">Reset</button>
-    <button>Submit</button>
+    <button hx-post="post-form" hx-target="#result" hx-swap="outerHTML">
+      Submit
+    </button>
   </div>
 </form>

@@ -1,10 +1,25 @@
-use axum::{routing::post, Router};
+use axum::{routing::post, Form, Router};
 use maud::{html, Markup};
+use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
 
 async fn clicked() -> Markup {
     html! {
         p { "You clicked !"}
+    }
+}
+
+#[derive(Deserialize, Debug)]
+#[allow(dead_code)]
+struct MyForm {
+    first_name: String,
+    last_name: String,
+    email: String,
+}
+
+async fn post_form(Form(form): Form<MyForm>) -> Markup {
+    html! {
+        p { "Hi Mr " (form.first_name) " " (form.last_name) " !" }
     }
 }
 
@@ -21,7 +36,9 @@ async fn main() {
     let misc_routes =
         Router::new().nest_service("/favicon.ico", ServeFile::new("assets/favicon.ico"));
 
-    let api_routes = Router::new().route("/clicked", post(clicked));
+    let api_routes = Router::new()
+        .route("/clicked", post(clicked))
+        .route("/post-form", post(post_form));
 
     let app = Router::new()
         .merge(template_routes)
