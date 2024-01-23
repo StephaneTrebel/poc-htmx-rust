@@ -27,7 +27,11 @@ struct MyForm {
 #[tracing::instrument]
 async fn post_form(Form(form): Form<MyForm>) -> Markup {
     html! {
-        p { "Hi Mr " (form.first_name) " " (form.last_name) " !" }
+       tr {
+         td { (form.first_name) }
+         td { (form.last_name) }
+         td { (form.email) }
+       }
     }
 }
 
