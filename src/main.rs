@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
 
 use axum::{
     extract::MatchedPath,
@@ -6,6 +6,7 @@ use axum::{
     routing::{get, post},
     Form, Router,
 };
+use humantime::format_duration;
 use maud::{html, Markup};
 use serde::Deserialize;
 use tower_http::{
@@ -37,7 +38,7 @@ async fn healthcheck(time: SystemTime) -> Markup {
             html! {
                 p { "Server uptime: "
                     span class="badge text-bg-primary"  {
-                        (elapsed.as_secs())
+                        (format_duration(Duration::from_secs(elapsed.as_secs())))
                     }
                     " secs"
                 }
