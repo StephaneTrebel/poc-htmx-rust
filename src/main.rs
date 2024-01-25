@@ -1,38 +1,70 @@
-use std::time::{Duration, SystemTime};
+use std::{
+    sync::{Arc, Mutex},
+    time::{Duration, SystemTime},
+};
 
 use axum::{
-    extract::MatchedPath,
+    extract::{MatchedPath, State},
     http::Request,
     routing::{get, post},
     Form, Router,
 };
 use humantime::format_duration;
 use maud::{html, Markup};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
 };
-use tracing::info_span;
+use tracing::{info, info_span};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug)]
+struct AppState {
+    users: Arc<Mutex<Vec<User>>>,
+}
+
+#[derive(Clone, Serialize, PartialEq, Deserialize, Debug)]
 #[allow(dead_code)]
-struct MyForm {
+struct User {
     first_name: String,
     last_name: String,
     email: String,
 }
 
 #[tracing::instrument]
-async fn post_form(Form(form): Form<MyForm>) -> Markup {
+async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -> Markup {
+    let new_user = User {
+        first_name: user_form.first_name,
+        last_name: user_form.last_name,
+        email: user_form.email,
+    };
+
+    let mut users = state.users.lock().expect("Mutex was poisoned !");
+    users.push(new_user.clone());
+    info!("Inserted {new_user:?}");
+
     html! {
-       tr {
-         td { (form.first_name) }
-         td { (form.last_name) }
-         td { (form.email) }
-       }
+        tr {
+            td { (new_user.first_name) }
+            td { (new_user.last_name) }
+            td { (new_user.email) }
+        }
     }
+}
+
+#[tracing::instrument]
+async fn get_users(State(state): State<AppState>) -> Markup {
+    let users = state.users.lock().expect("Mutex was poisoned !");
+    html! {
+    @for user in users.iter() {
+           tr {
+             td { (user.first_name) }
+             td { (user.last_name) }
+             td { (user.email) }
+           }
+            }
+        }
 }
 
 #[tracing::instrument]
@@ -59,11 +91,15 @@ async fn main() {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-                "poc_htmx_rust=debug,tower_http=debug,axum::rejection=trace".into()
+                "poc_htmx_rust=trace,tower_http=trace,axum::rejection=trace".into()
             }),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
+
+    let state = AppState {
+        users: Arc::new(Mutex::new(Vec::new())),
+    };
 
     let now: SystemTime = SystemTime::now();
 
@@ -98,6 +134,8 @@ async fn main() {
                 )
             }),
         )
+        .route("/get-users", get(get_users))
+        .with_state(state)
         .route("/healthcheck", get(move || healthcheck(now)));
 
     let app = Router::new()

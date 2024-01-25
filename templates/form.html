@@ -37,5 +37,10 @@
       <th scope="col">Email</th>
     </tr>
   </thead>
-  <tbody id="result" class="table-group-divider"></tbody>
+  <tbody
+    id="result"
+    class="table-group-divider"
+    hx-trigger="load"
+    hx-get="get-users"
+  ></tbody>
 </table>
