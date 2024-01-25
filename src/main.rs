@@ -69,6 +69,7 @@ async fn main() {
 
     let template_routes = Router::new()
         .nest_service("/", ServeFile::new("templates/index.html"))
+        .nest_service("/home", ServeFile::new("templates/home.html"))
         .nest_service("/get-form", ServeFile::new("templates/form.html"));
 
     let dir_routes = Router::new()

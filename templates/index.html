@@ -15,17 +15,55 @@
   </head>
 
   <body style="padding: 10px">
-    <h1>HTMX - Rust</h1>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">HTMX - Rust</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="#"
+                hx-trigger="load,click"
+                hx-get="/home"
+                hx-target="#router-wrapper"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#"
+                hx-get="/get-form"
+                hx-target="#router-wrapper"
+                >Form</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-    <button
-      type="button"
+    <div
       class="btn btn-secondary"
       style="position: absolute; top: 10px; right: 10px"
       hx-get="/healthcheck"
       hx-trigger="every 1s"
-    ></button>
+    ></div>
 
-    <div id="wrapper-form" hx-trigger="load" hx-get="/get-form"></div>
+    <div id="router-wrapper"></div>
 
     <script src="assets/htmx.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
