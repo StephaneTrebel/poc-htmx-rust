@@ -6,6 +6,7 @@
   hx-post="post-form"
   hx-target="#result"
   hx-swap="beforeend"
+  style="margin-bottom: 50px"
 >
   <div class="mb-3">
     <my-input
@@ -24,6 +25,17 @@
     ></my-input>
   </div>
 
-    <button type="reset" class="btn btn-secondary">Reset</button>
-    <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="reset" class="btn btn-secondary">Reset</button>
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+<table class="table table-striped table-hover table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+    </tr>
+  </thead>
+  <tbody id="result" class="table-group-divider"></tbody>
+</table>

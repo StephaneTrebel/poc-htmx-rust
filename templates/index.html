@@ -25,18 +25,7 @@
       hx-trigger="every 1s"
     ></button>
 
-    <div id="wrapper-form" hx-trigger="load" hx-get="/get-form" style="margin-bottom: 50px"></div>
-
-    <table class="table table-striped table-hover table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">First Name</th>
-          <th scope="col">Last Name</th>
-          <th scope="col">Email</th>
-        </tr>
-      </thead>
-      <tbody id="result" class="table-group-divider"></tbody>
-    </table>
+    <div id="wrapper-form" hx-trigger="load" hx-get="/get-form"></div>
 
     <script src="assets/htmx.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
