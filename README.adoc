@@ -12,8 +12,6 @@ This repository is a simple proof of concept around https://htmx.org[HTMX], and 
 
 [source,bash]
 ----
-$ cd backend
-
 $ cargo build --release
 ----
 
@@ -21,8 +19,6 @@ $ cargo build --release
 
 [source,bash]
 ----
-$ cd backend
-
 $ cargo run --release
 ----
 
@@ -30,8 +26,5 @@ $ cargo run --release
 
 [source,bash]
 ----
-$ cd backend
-
 $ cargo test
 ----
-
