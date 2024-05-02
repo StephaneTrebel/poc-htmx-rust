@@ -1,4 +1,5 @@
 use std::{
+    fs,
     sync::{Arc, Mutex},
     time::{Duration, SystemTime},
 };
@@ -10,7 +11,7 @@ use axum::{
     Form, Router,
 };
 use humantime::format_duration;
-use maud::{html, Markup};
+use maud::{html, Markup, PreEscaped};
 use serde::{Deserialize, Serialize};
 use tower_http::{
     services::{ServeDir, ServeFile},
@@ -67,6 +68,105 @@ async fn get_users(State(state): State<AppState>) -> Markup {
         }
 }
 
+fn breadcrumb_inactive_item(item: &str, target_step: &str) -> Markup {
+    html! {
+        li class="breadcrumb-item" {
+            a href="#" hx-get=("/get-".to_owned() + target_step) hx-target="#breadcrumb-container" { (item) }
+        }
+    }
+}
+
+fn breadcrumb_active_item(item: &str) -> Markup {
+    html! {
+        li class="breadcrumb-item active" aria-current="page" { (item) }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+enum Step {
+    Step1,
+    Step2,
+    Step3,
+}
+
+impl ToString for Step {
+    fn to_string(&self) -> String {
+        match self {
+            Step::Step1 => "step1".to_owned(),
+            Step::Step2 => "step2".to_owned(),
+            Step::Step3 => "step3".to_owned(),
+        }
+    }
+}
+
+fn breadcrumb_header(current_step: &Step) -> Markup {
+    html! {
+        nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" {
+            ol class="breadcrumb" {
+                (if current_step == &Step::Step1 {
+                    breadcrumb_active_item("Step 1")
+                } else {
+                    breadcrumb_inactive_item("Step 1", "step1")
+                })
+                (if current_step == &Step::Step2 {
+                    breadcrumb_active_item("Step 2")
+                } else {
+                    breadcrumb_inactive_item("Step 2", "step2")
+                })
+                (if current_step == &Step::Step3 {
+                    breadcrumb_active_item("Step 3")
+                } else {
+                    breadcrumb_inactive_item("Step 3", "step3")
+                })
+            }
+        }
+    }
+}
+
+fn breadcrumb_footer(previous_step: Option<String>, next_step: Option<String>) -> Markup {
+    html! {
+        div id="breadcrumb-footer" {
+            @match previous_step {
+                Some(step) => {
+                    a class="btn btn-primary" href="#"
+                        hx-get=("/get-".to_owned() + step.as_ref())
+                        hx-target="#breadcrumb-container"
+                        { "Previous" }
+                },
+                None => {}
+            }
+            @match next_step {
+                Some(step) => {
+                    a class="btn btn-primary" href="#"
+                        hx-get=("/get-".to_owned() + step.as_ref())
+                        hx-target="#breadcrumb-container"
+                        { "Next" }
+                },
+                None => {}
+            }
+        }
+    }
+}
+
+#[tracing::instrument]
+async fn get_step(step: &Step, step_content: String) -> Markup {
+    html! {
+       (breadcrumb_header(step))
+       div id="breadcrumb-content" {
+           (PreEscaped(step_content))
+       }
+       (breadcrumb_footer(match step {
+           Step::Step1 => None,
+           Step::Step2 => Some(Step::Step1.to_string()),
+           Step::Step3 => Some(Step::Step2.to_string()),
+       }, match step {
+           Step::Step1 => Some(Step::Step2.to_string()),
+           Step::Step2 => Some(Step::Step3.to_string()),
+           Step::Step3 => None,
+       }))
+    }
+}
+
 #[tracing::instrument]
 async fn healthcheck(time: SystemTime) -> Markup {
     match time.elapsed() {
@@ -106,7 +206,11 @@ async fn main() {
     let template_routes = Router::new()
         .nest_service("/", ServeFile::new("templates/index.html"))
         .nest_service("/home", ServeFile::new("templates/home.html"))
-        .nest_service("/get-form", ServeFile::new("templates/form.html"));
+        .nest_service("/get-form", ServeFile::new("templates/form.html"))
+        .nest_service(
+            "/get-breadcrumb",
+            ServeFile::new("templates/breadcrumb.html"),
+        );
 
     let dir_routes = Router::new()
         .nest_service("/assets", ServeDir::new("assets"))
@@ -136,6 +240,33 @@ async fn main() {
         )
         .route("/get-users", get(get_users))
         .with_state(state)
+        .route(
+            "/get-step1",
+            get(|| {
+                get_step(
+                    &Step::Step1,
+                    fs::read_to_string("templates/step1.html").expect("Couldn't read step1.html"),
+                )
+            }),
+        )
+        .route(
+            "/get-step2",
+            get(|| {
+                get_step(
+                    &Step::Step2,
+                    fs::read_to_string("templates/step2.html").expect("Couldn't read step2.html"),
+                )
+            }),
+        )
+        .route(
+            "/get-step3",
+            get(|| {
+                get_step(
+                    &Step::Step3,
+                    fs::read_to_string("templates/step3.html").expect("Couldn't read step3.html"),
+                )
+            }),
+        )
         .route("/healthcheck", get(move || healthcheck(now)));
 
     let app = Router::new()

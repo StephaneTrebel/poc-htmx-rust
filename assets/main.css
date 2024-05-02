@@ -1,0 +1,25 @@
+#breadcrumb-container {
+	width: 33%;
+  margin-left: 33%;
+  margin-top: 3rem;
+	display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+ol.breadcrumb {
+  display: flex;
+  justify-content: space-around;
+  align-content: unset;
+  margin-bottom: 3rem;
+}
+
+#breadcrumb-content {
+  flex-grow: 2;
+  margin-bottom: 3rem;
+}
+
+#breadcrumb-footer {
+	display: flex;
+  justify-content: space-around;
+}
