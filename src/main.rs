@@ -1,18 +1,20 @@
 use std::{
-    fs,
+    fmt, fs,
+    str::FromStr,
     sync::{Arc, Mutex},
     time::{Duration, SystemTime},
 };
 
 use axum::{
-    extract::{MatchedPath, State},
+    extract::{MatchedPath, Query, State},
     http::Request,
+    response::{IntoResponse, Response},
     routing::{get, post},
     Form, Router,
 };
 use humantime::format_duration;
 use maud::{html, Markup, PreEscaped};
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize};
 use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
@@ -34,7 +36,7 @@ struct User {
 }
 
 #[tracing::instrument]
-async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -> Markup {
+async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -> Response {
     let new_user = User {
         first_name: user_form.first_name,
         last_name: user_form.last_name,
@@ -45,13 +47,15 @@ async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -
     users.push(new_user.clone());
     info!("Inserted {new_user:?}");
 
-    html! {
+    let body = html! {
         tr {
             td { (new_user.first_name) }
             td { (new_user.last_name) }
             td { (new_user.email) }
         }
-    }
+    };
+
+    ([("HX-Trigger-After-Swap", "newUser")], body).into_response()
 }
 
 #[tracing::instrument]
@@ -186,6 +190,50 @@ async fn healthcheck(time: SystemTime) -> Markup {
     }
 }
 
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+struct SnackbarParams {
+    #[serde(default, deserialize_with = "empty_string_as_none")]
+    first_name: Option<String>,
+    #[serde(default, deserialize_with = "empty_string_as_none")]
+    last_name: Option<String>,
+}
+
+/// Serde deserialization decorator to map empty Strings to None,
+fn empty_string_as_none<'de, D, T>(de: D) -> Result<Option<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: FromStr,
+    T::Err: fmt::Display,
+{
+    let opt = Option::<String>::deserialize(de)?;
+    match opt.as_deref() {
+        None | Some("") => Ok(None),
+        Some(s) => FromStr::from_str(s).map_err(de::Error::custom).map(Some),
+    }
+}
+
+#[tracing::instrument]
+async fn get_new_user_snackbar(Query(params): Query<SnackbarParams>) -> Markup {
+    match (params.first_name, params.last_name) {
+        (Some(f), Some(l)) => html! {
+            div class="alert alert-success alert-dismissible fade show" role="alert" {
+                (format!("L'utilisateur {f} {l} a bien été ajouté !"))
+                button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+                }
+            }
+        },
+        _ => html! {
+            div class="alert alert-danger alert-dismissible fade show" role="alert" {
+                (format!("Une erreur est survenue pendant l'ajout de l'utilisateur !"))
+                button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+                }
+            }
+        },
+    }
+}
+// (user.first_name.to_owned() + " " + user.last_name.as_ref() + " added !")
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
@@ -239,6 +287,7 @@ async fn main() {
             }),
         )
         .route("/get-users", get(get_users))
+        .route("/get-new-user-snackbar", get(get_new_user_snackbar))
         .with_state(state)
         .route(
             "/get-step1",
