@@ -1,5 +1,6 @@
 use std::{
-    fmt, fs,
+    fmt::{self, Display},
+    fs,
     str::FromStr,
     sync::{Arc, Mutex},
     time::{Duration, SystemTime},
@@ -93,13 +94,17 @@ enum Step {
     Step3,
 }
 
-impl ToString for Step {
-    fn to_string(&self) -> String {
-        match self {
-            Step::Step1 => "step1".to_owned(),
-            Step::Step2 => "step2".to_owned(),
-            Step::Step3 => "step3".to_owned(),
-        }
+impl Display for Step {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Step::Step1 => "step1".to_owned(),
+                Step::Step2 => "step2".to_owned(),
+                Step::Step3 => "step3".to_owned(),
+            }
+        )
     }
 }
 
@@ -130,23 +135,17 @@ fn breadcrumb_header(current_step: &Step) -> Markup {
 fn breadcrumb_footer(previous_step: Option<String>, next_step: Option<String>) -> Markup {
     html! {
         div id="breadcrumb-footer" {
-            @match previous_step {
-                Some(step) => {
-                    a class="btn btn-primary" href="#"
-                        hx-get=("/get-".to_owned() + step.as_ref())
-                        hx-target="#breadcrumb-container"
-                        { "Previous" }
-                },
-                None => {}
+            @if let Some(step) = previous_step {
+                a class="btn btn-primary" href="#"
+                    hx-get=("/get-".to_owned() + step.as_ref())
+                    hx-target="#breadcrumb-container"
+                    { "Previous" }
             }
-            @match next_step {
-                Some(step) => {
-                    a class="btn btn-primary" href="#"
-                        hx-get=("/get-".to_owned() + step.as_ref())
-                        hx-target="#breadcrumb-container"
-                        { "Next" }
-                },
-                None => {}
+            @if let Some(step) = next_step {
+                a class="btn btn-primary" href="#"
+                    hx-get=("/get-".to_owned() + step.as_ref())
+                    hx-target="#breadcrumb-container"
+                    { "Next" }
             }
         }
     }
