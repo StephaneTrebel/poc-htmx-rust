@@ -245,7 +245,23 @@ async fn main() {
         .init();
 
     let state = AppState {
-        users: Arc::new(Mutex::new(Vec::new())),
+        users: Arc::new(Mutex::new(Vec::from([
+            User {
+                first_name: "Alphonse".to_owned(),
+                last_name: "Daudet".to_owned(),
+                email: "funky-al@mon-moulin.com".to_owned(),
+            },
+            User {
+                first_name: "Philippe".to_owned(),
+                last_name: "Katherine".to_owned(),
+                email: "nu-et-banane@schtroumpf.fr".to_owned(),
+            },
+            User {
+                first_name: "Marie".to_owned(),
+                last_name: "Curie".to_owned(),
+                email: "lady-radio-gaga@geiger.po".to_owned(),
+            },
+        ]))),
     };
 
     let now: SystemTime = SystemTime::now();
