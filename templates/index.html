@@ -30,14 +30,13 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav" hx-boost="true">
             <li class="nav-item">
               <a
                 class="nav-link active"
                 aria-current="page"
-                href="#"
+                href="/home"
                 hx-trigger="load,click"
-                hx-get="/home"
                 hx-target="#router-wrapper"
                 >Home</a
               >
@@ -46,8 +45,7 @@
             <li class="nav-item">
               <a
                 class="nav-link"
-                href="#"
-                hx-get="/get-form"
+                href="/get-form"
                 hx-target="#router-wrapper"
                 >Form</a
               >
@@ -56,8 +54,8 @@
             <li class="nav-item">
               <a
                 class="nav-link"
-                href="#"
-                hx-get="/get-breadcrumb"
+                href="/get-breadcrumb"
+                hx-get=""
                 hx-target="#router-wrapper"
                 >Breadcrumb</a
               >
