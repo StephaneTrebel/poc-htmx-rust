@@ -31,10 +31,16 @@
 </form>
 
 <div
-  id="my-form-snackbar"
+  id="my-form-snackbar-success"
   hx-get="/get-new-user-snackbar"
   hx-trigger="newUser from:body"
   hx-include="input[name='first_name'],input[name='last_name']"
+></div>
+
+<div
+  id="my-form-snackbar-error"
+  hx-get="/get-error-snackbar"
+  hx-trigger="htmx:responseError from:body"
 ></div>
 
 <table class="table table-striped table-hover table-bordered">

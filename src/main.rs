@@ -8,7 +8,7 @@ use std::{
 
 use axum::{
     extract::{MatchedPath, Query, State},
-    http::Request,
+    http::{Request, StatusCode},
     response::{IntoResponse, Response},
     routing::{get, post},
     Form, Router,
@@ -36,8 +36,25 @@ struct User {
     email: String,
 }
 
+enum MyError {
+    SomethingWentWrong,
+}
+
+impl IntoResponse for MyError {
+    fn into_response(self) -> Response {
+        let body = match self {
+            MyError::SomethingWentWrong => "something went wrong",
+        };
+
+        (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
+    }
+}
+
 #[tracing::instrument]
 async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -> Response {
+    if user_form.first_name == "error" {
+        return MyError::SomethingWentWrong.into_response();
+    }
     let new_user = User {
         first_name: user_form.first_name,
         last_name: user_form.last_name,
@@ -231,7 +248,17 @@ async fn get_new_user_snackbar(Query(params): Query<SnackbarParams>) -> Markup {
         },
     }
 }
-// (user.first_name.to_owned() + " " + user.last_name.as_ref() + " added !")
+
+#[tracing::instrument]
+async fn get_error_snackbar() -> Markup {
+    html! {
+        div class="alert alert-danger alert-dismissible fade show" role="alert" {
+            (format!("Une erreur est survenue :("))
+            button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+            }
+        }
+    }
+}
 
 #[tokio::main]
 async fn main() {
@@ -303,6 +330,7 @@ async fn main() {
         )
         .route("/get-users", get(get_users))
         .route("/get-new-user-snackbar", get(get_new_user_snackbar))
+        .route("/get-error-snackbar", get(get_error_snackbar))
         .with_state(state)
         .route(
             "/get-step1",
