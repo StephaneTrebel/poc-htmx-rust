@@ -300,6 +300,10 @@ async fn main() {
         .nest_service(
             "/get-breadcrumb",
             ServeFile::new("templates/breadcrumb.html"),
+        )
+        .nest_service(
+            "/get-boost",
+            ServeFile::new("templates/boost.html"),
         );
 
     let dir_routes = Router::new()
