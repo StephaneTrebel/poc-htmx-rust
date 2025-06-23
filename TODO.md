@@ -4,4 +4,4 @@ This document list possible tasks that I (or…you ?) can take to improve the re
 
 - Dynamically handle the `active` class on the top navigation (Home/Form/etc.)
 - Modularize the code: Breadcrumbs stuff should be in its own module
-- Handle a router ? Make the URL carry the state ?
+- Handle 404 errors
