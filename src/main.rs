@@ -80,14 +80,14 @@ async fn post_form(State(state): State<AppState>, Form(user_form): Form<User>) -
 async fn get_users(State(state): State<AppState>) -> Markup {
     let users = state.users.lock().expect("Mutex was poisoned !");
     html! {
-    @for user in users.iter() {
-           tr {
-             td { (user.first_name) }
-             td { (user.last_name) }
-             td { (user.email) }
-           }
+        @for user in users.iter() {
+            tr {
+                td { (user.first_name) }
+                td { (user.last_name) }
+                td { (user.email) }
             }
         }
+    }
 }
 
 fn breadcrumb_inactive_item(item: &str, target_step: &str) -> Markup {
@@ -171,19 +171,19 @@ fn breadcrumb_footer(previous_step: Option<String>, next_step: Option<String>) -
 #[tracing::instrument]
 async fn get_step(step: &Step, step_content: String) -> Markup {
     html! {
-       (breadcrumb_header(step))
-       div id="breadcrumb-content" {
-           (PreEscaped(step_content))
-       }
-       (breadcrumb_footer(match step {
-           Step::Step1 => None,
-           Step::Step2 => Some(Step::Step1.to_string()),
-           Step::Step3 => Some(Step::Step2.to_string()),
-       }, match step {
-           Step::Step1 => Some(Step::Step2.to_string()),
-           Step::Step2 => Some(Step::Step3.to_string()),
-           Step::Step3 => None,
-       }))
+        (breadcrumb_header(step))
+            div id="breadcrumb-content" {
+                (PreEscaped(step_content))
+            }
+        (breadcrumb_footer(match step {
+            Step::Step1 => None,
+            Step::Step2 => Some(Step::Step1.to_string()),
+            Step::Step3 => Some(Step::Step2.to_string()),
+        }, match step {
+            Step::Step1 => Some(Step::Step2.to_string()),
+            Step::Step2 => Some(Step::Step3.to_string()),
+            Step::Step3 => None,
+        }))
     }
 }
 
@@ -235,15 +235,15 @@ async fn get_new_user_snackbar(Query(params): Query<SnackbarParams>) -> Markup {
         (Some(f), Some(l)) => html! {
             div class="alert alert-success alert-dismissible fade show" role="alert" {
                 (format!("L'utilisateur {f} {l} a bien été ajouté !"))
-                button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
-                }
+                    button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+                    }
             }
         },
         _ => html! {
             div class="alert alert-danger alert-dismissible fade show" role="alert" {
                 (format!("Une erreur est survenue pendant l'ajout de l'utilisateur !"))
-                button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
-                }
+                    button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+                    }
             }
         },
     }
@@ -254,9 +254,29 @@ async fn get_error_snackbar() -> Markup {
     html! {
         div class="alert alert-danger alert-dismissible fade show" role="alert" {
             (format!("Une erreur est survenue :("))
-            button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
-            }
+                button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" {
+                }
         }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+struct CheckInputParams {
+    #[serde(default, deserialize_with = "empty_string_as_none")]
+    content: Option<String>,
+}
+
+#[tracing::instrument]
+async fn check_input(Query(params): Query<CheckInputParams>) -> Markup {
+    match params.content {
+        Some(s) if s == "warning" => html! {
+            span class="badge text-bg-warning" { "warning" }
+        },
+        Some(s) if s != "warning" => html! {
+            span class="badge text-bg-success" { "OK" }
+        },
+        _ => html! {},
     }
 }
 
@@ -301,10 +321,7 @@ async fn main() {
             "/get-breadcrumb",
             ServeFile::new("templates/breadcrumb.html"),
         )
-        .nest_service(
-            "/get-boost",
-            ServeFile::new("templates/boost.html"),
-        );
+        .nest_service("/get-boost", ServeFile::new("templates/boost.html"));
 
     let dir_routes = Router::new()
         .nest_service("/assets", ServeDir::new("assets"))
@@ -335,6 +352,7 @@ async fn main() {
         .route("/get-users", get(get_users))
         .route("/get-new-user-snackbar", get(get_new_user_snackbar))
         .route("/get-error-snackbar", get(get_error_snackbar))
+        .route("/check-input", get(check_input))
         .with_state(state)
         .route(
             "/get-step1",

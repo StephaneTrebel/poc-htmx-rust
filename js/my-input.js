@@ -1,3 +1,7 @@
+function getValue(element) {
+  return element.value;
+}
+
 // Many thanks to https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj
 try {
   customElements.define(
@@ -18,18 +22,29 @@ try {
 
       connectedCallback() {
         this.innerHTML = `
-			<div>
-				<label
-				  for="${this._attrs['name']}"
-					class="form-label"
-				>${this._attrs['label']}</label>
-				<input
-				  id="${this._attrs['name']}"
-					class="form-control"
-					name="${this._attrs['name']}"
-					type="${this._attrs['type'] || 'text'}"
-					placeholder="${this._attrs['placeholder']}"
-				/>
+			<div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label
+            for="${this._attrs['name']}"
+            class="form-label"
+          >${this._attrs['label']}</label>
+        </div>
+        <div class="col-auto">
+          <input
+            id="${this._attrs['name']}"
+            class="form-control"
+            name="${this._attrs['name']}"
+            type="${this._attrs['type'] || 'text'}"
+            placeholder="${this._attrs['placeholder']}"
+            hx-trigger="keyup changed delay:500ms"
+            hx-get="/check-input"
+            hx-target='#span-${this._attrs['name']}'
+            hx-swap="innerHTML"
+            hx-vals='js:{content: getValue(${this._attrs["name"]})}'
+          />
+        </div>
+        <div class="col-auto" id="span-${this._attrs['name']}">
+        </div>
       </div>
 `;
         this.$input = this.querySelector('input');
